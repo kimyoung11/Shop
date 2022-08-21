@@ -3,14 +3,19 @@ import "./App.css";
 // import Nav from "react-bootstrap/Nav";
 // import Navbar from "react-bootstrap/Navbar";
 import { Navbar, Container, Nav } from "react-bootstrap";
-import { useState } from "react";
+import { createContext, useState } from "react";
 import data from "./data.js";
 import { Routes, Route, Link, useNavigate, Outlet } from "react-router-dom";
 import Detail from "./routes/Detail.js";
+import axios from "axios";
+
+export let Context1 = createContext(); //context(state보관함)를 만들어줌
 
 function App() {
-  let [shoes] = useState(data);
+  let [shoes, setShoes] = useState(data);
   let navigate = useNavigate();
+  let [count, setCount] = useState(0);
+  let [재고] = useState([10, 11, 12]);
   return (
     <div className="App">
       <Navbar bg="light" variant="light">
@@ -48,10 +53,48 @@ function App() {
                   })}
                 </div>
               </div>
+              <button
+                onClick={() => {
+                  <Loading />;
+                  setCount(count + 1);
+                  if (count == 1) {
+                    axios
+                      .get("https://codingapple1.github.io/shop/data2.json")
+                      .then((result) => {
+                        let temp = [...shoes, ...result.data];
+                        setShoes(temp);
+                      })
+                      .catch(() => {
+                        console.log("실패");
+                      });
+                  } else if (count == 2) {
+                    axios
+                      .get("https://codingapple1.github.io/shop/data3.json")
+                      .then((result) => {
+                        let temp = [...shoes, ...result.data];
+                        setShoes(temp);
+                      })
+                      .catch(() => {
+                        console.log("실패");
+                      });
+                  } else if (count >= 3) {
+                    alert("더이상 상품이 없습니다");
+                  }
+                }}
+              >
+                더보기
+              </button>
             </>
           }
         />
-        <Route path="/detail/:id" element={<Detail shoes={shoes} />} />
+        <Route
+          path="/detail/:id"
+          element={
+            <Context1.Provider value={{ 재고 }}>
+              <Detail shoes={shoes} />
+            </Context1.Provider>
+          }
+        />
         <Route path="*" element={<div>없는 페이지에요</div>} />{" "}
         {/* 이상한 페이지 접속했을 때 */}
         <Route path="/about" element={<About />}>
@@ -63,6 +106,15 @@ function App() {
           <Route path="two" element={<div>생일기념 쿠폰받기</div>} />
         </Route>
       </Routes>
+    </div>
+  );
+}
+
+function Loading() {
+  return (
+    <div>
+      <h4>로딩중입니다...</h4>
+      <h4>기다려주세요...</h4>
     </div>
   );
 }

@@ -8,6 +8,7 @@ import data from "./data.js";
 import { Routes, Route, Link, useNavigate, Outlet } from "react-router-dom";
 import Detail from "./routes/Detail.js";
 import axios from "axios";
+import Cart from "./routes/Cart";
 
 export let Context1 = createContext(); //context(state보관함)를 만들어줌
 
@@ -95,6 +96,7 @@ function App() {
             </Context1.Provider>
           }
         />
+        <Route path="/cart" element={<Cart />} />
         <Route path="*" element={<div>없는 페이지에요</div>} />{" "}
         {/* 이상한 페이지 접속했을 때 */}
         <Route path="/about" element={<About />}>
